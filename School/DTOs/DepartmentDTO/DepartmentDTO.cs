@@ -1,0 +1,10 @@
+﻿namespace School.DTOs.DepartmentDTO
+{
+    public class DepartmentDTO
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string?  description { get; set; }
+        
+    }
+}
