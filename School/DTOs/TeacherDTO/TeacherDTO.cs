@@ -2,9 +2,9 @@
 {
     public class TeacherDTO
     {
-        public int id { get; set; }
-        public string name { get; set; }
+        public int TeacheriD { get; set; }
+        public string fullname { get; set; }
         public string Email { get; set; }
-        public string DepName {  get; set; }
+        public string Name {  get; set; }
     }
 }
