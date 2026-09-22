@@ -7,6 +7,10 @@ namespace School.Context
     {
        public DbSet<Department> Departments {  get; set; }
       public DbSet<Teacher> Teachers { get; set; }
+      public DbSet<ClassRoom> classRooms { get; set; }
+      public DbSet<Student> students { get; set; }
+      public DbSet<Subject> subjects { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Department>().HasMany(t => t.Teachers).WithOne(d => d.department).HasForeignKey(f => f.TeacheriD);
