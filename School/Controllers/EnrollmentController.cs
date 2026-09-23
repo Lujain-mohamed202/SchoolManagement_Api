@@ -26,15 +26,36 @@ namespace School.Controllers
             });
             mapper = confg.CreateMapper();
         }
+
         [HttpGet]
         public IActionResult GetEnrollments()
         {
-            var en = db.enrollments.Include(x => x.Student).Include(x => x.Subject).ToList();
+            var en=db.enrollments.Include(s=>s.Student).Include(s=>s.Subject).ToList();
             var DTO = mapper.Map<List<EnrollmentDTO>>(en);
             return Ok(DTO);
         }
+
+
+
+
+        [HttpGet("SpecificClassroom")]
+        public IActionResult GetEnrollment(int classroomid)
+        {
+            var en = db.enrollments.Where(e => e.Student.ClassRoomId == classroomid)
+              .OrderByDescending(e => e.Grade).Select(e => new
+              {
+                  Id = e.Id,
+                  StudentID = e.StudentId,
+                  Grade = e.Grade,
+                  subjectName = e.Subject.Name
+              });
+            //var DTO = mapper.Map<List<EnrollmentDTO>>(en);
+            //return Ok(DTO);
+
+            return Ok(en);
+        }
         [HttpGet("ID")]
-        public IActionResult GetEnrollments(int id)
+        public IActionResult GetById(int id)
         {
             var en = db.enrollments.Include(x => x.Student).Include(x => x.Subject).FirstOrDefault();
             var DTO = mapper.Map<EnrollmentDTO>(en);

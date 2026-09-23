@@ -48,10 +48,34 @@ namespace School.Controllers
             //db.SaveChanges();
             //return Ok(DTO);
 
-            var st = db.students.Include(c=>c.ClassRoom).ToList();
+            var st = db.students.Include(c => c.ClassRoom).OrderBy(s => s.LastName).ToList();
             var DTO = mapper.Map<List<StudentDTO>>(st);
             return Ok(DTO);
         }
+
+
+        [HttpGet("SpecificClassroom")]
+        public IActionResult GetStudent()
+        {
+            var st = db.students.GroupBy(x => x.ClassRoomId)
+                .Select(f => new
+                {
+                    ClassroomID = f.Key,
+                    Count = f.Count()
+                });
+            return Ok(st);
+
+        }
+
+
+
+        [HttpGet("St")]
+        public IActionResult GetMark(int classid, int grade)
+        {
+            var st = db.students.Where(s => s.ClassRoomId == classid && s.Enrollments.Any(x => x.Grade >= grade));
+            return Ok(st);
+        }
+
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
@@ -71,7 +95,7 @@ namespace School.Controllers
             //};
             //return Ok(dto);
 
-            var st = db.students.Include(c => c.ClassRoom).FirstOrDefault(s=>s.Id==id);
+            var st = db.students.Include(c => c.ClassRoom).FirstOrDefault(s => s.Id == id);
             var DTO = mapper.Map<StudentDTO>(st);
             return Ok(DTO);
 
@@ -139,5 +163,17 @@ namespace School.Controllers
             db.SaveChanges();
             return NoContent();
         }
+
+
+
+
+
+        //    [HttpGet("uniquemail")]
+        //    public IActionResult Getemail(string email)
+        //    {
+        //        var st = db.students.Single(s=>s.Email==email);
+        //        return Ok(st);
+        //    }
+        //}
     }
 }
