@@ -19,7 +19,7 @@ namespace School.Controllers
 
         public TeacherController()
         {
-            db = new AppDbContext();
+           
 
             var config = new MapperConfiguration(cfg =>
             {

@@ -7,6 +7,7 @@ using School.Context;
 using School.DTOs.DepartmentDTO;
 using School.Mapping;
 using School.Models;
+using School.Repo.Interface;
 
 namespace School.Controllers
 {
@@ -14,15 +15,16 @@ namespace School.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
-        private readonly AppDbContext db;
+      //  private readonly AppDbContext db;
 
         private readonly IMapper mapper;
 
+        private readonly IGenericRepo<Department> debRepo;
 
 
-        public DepartmentController()
+        public DepartmentController(IGenericRepo<Department> debRepo)
         {
-            db = new AppDbContext();
+           this.debRepo = debRepo;
 
             var confg = new MapperConfiguration(cfg =>
             {
@@ -60,13 +62,15 @@ namespace School.Controllers
 
 
             //Auto Mapping
-            var dep = db.Departments.ToList();
+            //var dep = db.Departments.ToList();
 
 
-            var DTO = mapper.Map<List<DepartmentDTO>>(dep);
-            return Ok(DTO);
+            //var DTO = mapper.Map<List<DepartmentDTO>>(dep);
+            //return Ok(DTO);
 
 
+
+            return Ok(debRepo.GetAll());
 
         }
 
@@ -86,13 +90,15 @@ namespace School.Controllers
             //return Ok(DTO);
 
             //Auto Mapping
-            var dep = db.Departments.Find(id);
-            var DTO = mapper.Map<DepartmentDTO>(dep);
-            return Ok(DTO);
+            //var dep = db.Departments.Find(id);
+            //var DTO = mapper.Map<DepartmentDTO>(dep);
+            //return Ok(DTO);
+
+            return Ok(debRepo.GetById(id));
         }
 
         [HttpPost]
-        public IActionResult CreateDepartment(CreateDepatmentDTO createDepatmentDTO)
+        public IActionResult CreateDepartment(CreateDepatmentDTO createDepatmentDTO )
         {
             //Manual Mappping
             //if (createDepatmentDTO == null)
@@ -108,15 +114,16 @@ namespace School.Controllers
             //db.SaveChanges();
             //return Ok();
 
-            //Auto Mapping 
-            if (createDepatmentDTO == null)
-            {
-                return BadRequest();
-            }
+            ////Auto Mapping 
+            //if (createDepatmentDTO == null)
+            //{
+            //    return BadRequest();
+            //}
             var DTO = mapper.Map<Department>(createDepatmentDTO);
-            db.Add(DTO);
-            db.SaveChanges();
+             debRepo.Create(DTO);
             return CreatedAtAction(nameof(GetDepartments), new { id = DTO.Id }, createDepatmentDTO);
+
+            
 
         }
         [HttpPut("update")]
@@ -131,7 +138,7 @@ namespace School.Controllers
 
             //i.Name = updateDepartmentDTO.name;
             //i.Description= updateDepartmentDTO.description;
-            
+
             //db.SaveChanges();
             //return Ok(updateDepartmentDTO);
 
@@ -139,28 +146,30 @@ namespace School.Controllers
 
             //Auto Mapping
 
-            var dep = db.Departments.Find(id);
-            if(dep == null)
+            var dep = debRepo.GetById(id);
+            if (dep == null)
             {
                 NotFound();
             }
-             dep = mapper.Map(updateDepartmentDTO,dep);
-            db.SaveChanges();
-            return Ok(dep);
+            dep = mapper.Map(updateDepartmentDTO, dep);
+            debRepo.Update(dep);
+           return Ok(dep);
+
 
 
         }
 
         [HttpDelete("delete")]
-        public IActionResult DeleteDepartment(int id) 
+        public IActionResult Delete(int id) 
         { 
-            var deb = db.Departments.FirstOrDefault(b => b.Id == id);
-            if(deb == null)
-            {
-                return NotFound();
-            }
-            db.Departments.Remove(deb);
-            db.SaveChanges();
+            //var deb = db.Departments.FirstOrDefault(b => b.Id == id);
+            //if(deb == null)
+            //{
+            //    return NotFound();
+            //}
+            //db.Departments.Remove(deb);
+            //db.SaveChanges();
+            debRepo.Delete(id);
             return Ok();
         }
 

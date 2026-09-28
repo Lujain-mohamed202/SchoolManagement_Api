@@ -5,6 +5,7 @@ using School.Context;
 using School.DTOs.ClassRoomDTO;
 using School.Mapping;
 using School.Models;
+using School.Repo.Interface;
 using System.Runtime.CompilerServices;
 
 namespace School.Controllers
@@ -13,11 +14,12 @@ namespace School.Controllers
     [ApiController]
     public class ClassRoomController : ControllerBase
     {
-        private readonly AppDbContext db;
+
+        private readonly IGenericRepo<ClassRoom> classRepo;
         private readonly IMapper mapper;
-        public ClassRoomController()
+        public ClassRoomController(IGenericRepo<ClassRoom> classRepo)
         {
-            db = new AppDbContext();
+           this.classRepo =classRepo;
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -47,7 +49,7 @@ namespace School.Controllers
             //}
             //return Ok(DTO);
 
-            var classroom = db.classRooms.ToList();
+            var classroom = classRepo.GetAll();
             var DTO = mapper.Map<List<ClassRoomDTO>>(classroom);
             return Ok(DTO);
 
@@ -57,7 +59,7 @@ namespace School.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var classroom = db.classRooms.Find(id);
+            var classroom = classRepo.GetById(id);
             if(classroom == null)
             { 
                 return NotFound(); 
@@ -90,15 +92,15 @@ namespace School.Controllers
             //db.SaveChanges();
             //return Created();
             var DTO = mapper.Map<ClassRoom>(createclassroomdto);
-            db.Add(DTO);
-            db.SaveChanges();
+            classRepo.Create(DTO);
+          
             return Created();
 
         }
         [HttpPut]
         public IActionResult UpdateClassroom(int id,UpdateClassRoomDTO updateclassroomdto)
         {
-            var classroom = db.classRooms.Find(id);
+            var classroom = classRepo.GetById(id);
             if(classroom == null)
             {
                 return NotFound();
@@ -111,19 +113,19 @@ namespace School.Controllers
             //return Ok(updateclassroomdto);
 
             mapper.Map(updateclassroomdto, classroom);
-            db.SaveChanges();
+            classRepo.Update(classroom);
             return Ok();
         }
         [HttpDelete]
         public IActionResult DeleteClassroom(int id)
         {
-            var classroom = db.classRooms.Find(id);
-            if( classroom == null)
-            {
-                return NotFound();
-            }
-            db.classRooms.Remove(classroom);
-            db.SaveChanges();
+            //var classroom =classRepo.GetById(id);
+            //if( classroom == null)
+            //{
+            //    return NotFound();
+            //}
+           classRepo.Delete(id);
+           
             return NoContent();
         }
     }

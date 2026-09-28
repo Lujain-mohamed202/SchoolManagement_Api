@@ -5,7 +5,13 @@ namespace School.Context
 {
     public class AppDbContext :DbContext
     {
-       public DbSet<Department> Departments {  get; set; }
+       
+
+        public AppDbContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public DbSet<Department> Departments {  get; set; }
       public DbSet<Teacher> Teachers { get; set; }
       public DbSet<ClassRoom> classRooms { get; set; }
       public DbSet<Student> students { get; set; }
@@ -72,11 +78,7 @@ namespace School.Context
             
             base.OnModelCreating(modelBuilder);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Data Source=(localdb)\\SchoolServer;Initial Catalog=SchoolDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
-            base.OnConfiguring(optionsBuilder);
-        }
+      
 
         //u
     }

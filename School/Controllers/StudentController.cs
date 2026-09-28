@@ -6,6 +6,7 @@ using School.Context;
 using School.DTOs.StudentDTO;
 using School.Mapping;
 using School.Models;
+using School.Repo.Interface;
 
 namespace School.Controllers
 {
@@ -13,11 +14,11 @@ namespace School.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly AppDbContext db;
+        private readonly IGenericRepo<Student> stRepo;
         private readonly IMapper mapper;
-        public StudentController()
+        public StudentController(IGenericRepo<Student> stRepo)
         {
-            db = new AppDbContext();
+           this.stRepo = stRepo;
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -48,33 +49,40 @@ namespace School.Controllers
             //db.SaveChanges();
             //return Ok(DTO);
 
-            var st = db.students.Include(c => c.ClassRoom).OrderBy(s => s.LastName).ToList();
+            var st =stRepo.GetAll();
             var DTO = mapper.Map<List<StudentDTO>>(st);
             return Ok(DTO);
-        }
 
 
-        [HttpGet("SpecificClassroom")]
-        public IActionResult GetStudent()
-        {
-            var st = db.students.GroupBy(x => x.ClassRoomId)
-                .Select(f => new
-                {
-                    ClassroomID = f.Key,
-                    Count = f.Count()
-                });
-            return Ok(st);
+
+
+
+
 
         }
 
 
+        //[HttpGet("SpecificClassroom")]
+        //public IActionResult GetStudent()
+        //{
+        //    var st = db.students.GroupBy(x => x.ClassRoomId)
+        //        .Select(f => new
+        //        {
+        //            ClassroomID = f.Key,
+        //            Count = f.Count()
+        //        });
+        //    return Ok(st);
 
-        [HttpGet("St")]
-        public IActionResult GetMark(int classid, int grade)
-        {
-            var st = db.students.Where(s => s.ClassRoomId == classid && s.Enrollments.Any(x => x.Grade >= grade));
-            return Ok(st);
-        }
+        //}
+
+
+
+        //[HttpGet("St")]
+        //public IActionResult GetMark(int classid, int grade)
+        //{
+        //    var st = db.students.Where(s => s.ClassRoomId == classid && s.Enrollments.Any(x => x.Grade >= grade));
+        //    return Ok(st);
+        //}
 
 
         [HttpGet("{id}")]
@@ -95,7 +103,7 @@ namespace School.Controllers
             //};
             //return Ok(dto);
 
-            var st = db.students.Include(c => c.ClassRoom).FirstOrDefault(s => s.Id == id);
+            var st =stRepo.GetById(id);
             var DTO = mapper.Map<StudentDTO>(st);
             return Ok(DTO);
 
@@ -123,15 +131,15 @@ namespace School.Controllers
             //return CreatedAtAction(nameof(GetById), new { id = st.Id }, st);
 
             var DTO = mapper.Map<Student>(createstudentdto);
-            db.Add(DTO);
-            db.SaveChanges();
+            stRepo.Create(DTO);
+           
             return Created();
 
         }
         [HttpPut]
         public IActionResult UpdateStudent(UpdateStudentDTO updatestudentdto, int id)
         {
-            var student = db.students.Find(id);
+            var student = stRepo.GetById(id);
             if (student == null)
             {
                 return NotFound();
@@ -147,20 +155,20 @@ namespace School.Controllers
             //return Ok(updatestudentdto);
 
             mapper.Map(updatestudentdto, student);
-            db.SaveChanges();
+            stRepo.Update(student);
             return Ok();
         }
 
         [HttpDelete]
         public IActionResult DeleteStudent(int id)
         {
-            var st = db.students.Find(id);
-            if (st == null)
-            {
-                return NotFound();
-            }
-            db.students.Remove(st);
-            db.SaveChanges();
+            //var st = stRepo.GetById(id);
+            //if (st == null)
+            //{
+            //    return NotFound();
+            //}
+
+            stRepo.Delete(id);
             return NoContent();
         }
 

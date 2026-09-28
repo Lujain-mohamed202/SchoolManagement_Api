@@ -17,7 +17,7 @@ namespace School.Controllers
         private readonly IMapper mapper;
         public SubjectController()
         {
-            db = new AppDbContext();
+          
 
             var confg = new MapperConfiguration(cfg =>
             {

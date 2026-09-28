@@ -18,7 +18,7 @@ namespace School.Controllers
 
         public EnrollmentController()
         {
-            db = new AppDbContext();
+           
 
             var confg = new MapperConfiguration(cfg =>
             {
