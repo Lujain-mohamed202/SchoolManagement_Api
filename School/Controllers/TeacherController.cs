@@ -6,6 +6,8 @@ using School.Context;
 using School.DTOs.TeacherDTO;
 using School.Mapping;
 using School.Models;
+using School.Repo.Implementaion;
+using School.Repo.Interface;
 
 namespace School.Controllers
 {
@@ -13,13 +15,14 @@ namespace School.Controllers
     [ApiController]
     public class TeacherController : ControllerBase
     {
-        private readonly AppDbContext db;
+
+        private readonly IUnitOfWork unitOfWork;
 
         private readonly IMapper mapper;
 
-        public TeacherController()
+        public TeacherController(IUnitOfWork unitOfWork)
         {
-           
+            this.unitOfWork = unitOfWork;
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -53,9 +56,12 @@ namespace School.Controllers
             //return Ok(tDTO);
 
 
-            var teach = db.Teachers.Include(d=>d.department).ToList();
+            var teach = unitOfWork.teachers.GetAll();
             var DTO = mapper.Map<List<TeacherDTO>>(teach);
             return Ok(DTO);
+
+
+           
 
         }
 
@@ -76,7 +82,7 @@ namespace School.Controllers
             //};
             //return Ok(y);
 
-            var teach = db.Teachers.Include(d => d.department).FirstOrDefault(t=>t.TeacheriD==id);
+            var teach = unitOfWork.teachers.GetById(id);
             var DTO = mapper.Map<TeacherDTO>(teach);
             return Ok(DTO);
 
@@ -106,8 +112,7 @@ namespace School.Controllers
             //return CreatedAtAction(nameof(GetById), new { id = t.TeacheriD }, t);
 
             var DTO = mapper.Map<Teacher>(createTeacherDTO);
-            db.Add(DTO);
-            db.SaveChanges();
+            unitOfWork.teachers.Create(DTO);
             return Created();
 
 
@@ -117,7 +122,7 @@ namespace School.Controllers
         [HttpPut]
         public IActionResult UpdateTeacher(int id, UpdateTeacherDTO updateTeacherDTO)
         {
-            var tech = db.Teachers.Find(id);
+            var tech = unitOfWork.teachers.GetById(id);
             if (tech == null)
             {
                 return NotFound();
@@ -139,7 +144,7 @@ namespace School.Controllers
 
 
             mapper.Map(updateTeacherDTO, tech);
-            db.SaveChanges();
+           
             return Ok();
 
         }
@@ -147,15 +152,25 @@ namespace School.Controllers
         [HttpDelete]
         public IActionResult DeleteTeacher(int id)
         {
-            var tech = db.Teachers.Find(id);
-            if(tech == null)
-            {
-                return NotFound();
-            }
-            db.Teachers.Remove(tech);
-            db.SaveChanges();
+           
+            unitOfWork.teachers.Delete(id);
+            
             return Ok();
         }
-    }
+    
+
+    [HttpGet("GetById")]
+    public IActionResult GetByDepartment(int id,int salary)
+        {
+            return Ok(unitOfWork.teachers.Filter(id, salary));
+        }
+        [HttpGet("ByEmail")]
+        public IActionResult GetByEmail(string email)
+        {
+            return Ok(unitOfWork.teachers.GetByEmail(email));
+        }
+        
+
+}
 
 }

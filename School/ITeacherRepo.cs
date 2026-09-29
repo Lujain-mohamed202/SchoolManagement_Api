@@ -1,0 +1,3 @@
+﻿internal interface ITeacherRepo<T>
+{
+}

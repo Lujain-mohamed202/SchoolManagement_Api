@@ -6,6 +6,7 @@ using School.Context;
 using School.DTOs.SubjectDTO;
 using School.Mapping;
 using School.Models;
+using School.Repo.Interface;
 
 namespace School.Controllers
 {
@@ -14,11 +15,12 @@ namespace School.Controllers
     public class SubjectController : ControllerBase
     {
         private readonly AppDbContext db;
+        private readonly ISubjectRepo sRepo;
         private readonly IMapper mapper;
-        public SubjectController()
+        public SubjectController(ISubjectRepo sRepo)
         {
           
-
+            this.sRepo = sRepo;
             var confg = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile<SubjectProfile>();
@@ -72,5 +74,16 @@ namespace School.Controllers
             db.SaveChanges();
             return Ok();
         }
+
+        [HttpGet("GetFirstOrderBy")]
+        public IActionResult Getfirst(int id)
+        {
+            var sub = sRepo.GetFirst(id);
+            var DTO = mapper.Map<SubjectDTO>(sub);
+            return Ok(DTO);
+            
+        }
+       
+        
     } 
 }

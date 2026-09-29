@@ -8,7 +8,7 @@ namespace School.Repo.Implementaion
     {
         private readonly AppDbContext _context;
 
-        private readonly DbSet<T> db;
+       public  DbSet<T> db;
         public GenericRepo(AppDbContext context)
         {
             _context = context;

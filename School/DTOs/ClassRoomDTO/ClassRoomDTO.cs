@@ -10,6 +10,7 @@ namespace School.DTOs.ClassRoomDTO
 
      
         public int GradeLevel { get; set; }
+        public int Capacity { get; set; }
 
        
 

@@ -16,10 +16,14 @@ namespace School.Controllers
     {
 
         private readonly IGenericRepo<ClassRoom> classRepo;
+
         private readonly IMapper mapper;
-        public ClassRoomController(IGenericRepo<ClassRoom> classRepo)
+
+        private readonly IClassRoom cRepo;
+        public ClassRoomController(IGenericRepo<ClassRoom> classRepo, IClassRoom cRepo)
         {
            this.classRepo =classRepo;
+            this.cRepo =cRepo;
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -128,5 +132,22 @@ namespace School.Controllers
            
             return NoContent();
         }
+
+        [HttpGet("GetByCapacity")]
+        public IActionResult Get(int c)
+        {
+            return Ok(cRepo.GetFirstByCapacity(c));
+        }
+        [HttpGet("GetByName")]
+        public IActionResult GetName(string c)
+        {
+           var r = cRepo.GetByName(c);
+            if(r== null)
+            {
+                return NotFound("Not Found");
+            }
+            return Ok(r);
+        }
+        []
     }
 }
