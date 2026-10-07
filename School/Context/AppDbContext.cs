@@ -17,6 +17,7 @@ namespace School.Context
       public DbSet<Student> students { get; set; }
       public DbSet<Subject> subjects { get; set; }
       public DbSet<Enrollment> enrollments { get; set; }
+      public DbSet<User> users { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

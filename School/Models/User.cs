@@ -1,0 +1,13 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace School.Models
+{
+    [Index(nameof(Name),IsUnique =true)]
+    public class User
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; }
+    }
+}

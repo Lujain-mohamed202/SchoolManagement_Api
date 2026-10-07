@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using School.Context;
 using School.Models;
 using School.Repo.Implementaion;
 using School.Repo.Interface;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,8 +30,38 @@ builder.Services.AddScoped<IGenericRepo<Enrollment>,GenericRepo<Enrollment>>();
 builder.Services.AddScoped<ITeacherRepo,TeacherRepo>();
 builder.Services.AddScoped<ISubjectRepo,SubjectRepo>();
 builder.Services.AddScoped<IClassRoom,ClassRoomRepo>();
+builder.Services.AddScoped<IUserRepo,UserRepo>();
 
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
+
+
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"]));
+builder.Services.AddAuthentication(options =>
+{
+
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}
+).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["jwt:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["jwt:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = key
+    };
+});
+    
+
+
+
+
+
+
 
 
 
@@ -43,6 +76,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

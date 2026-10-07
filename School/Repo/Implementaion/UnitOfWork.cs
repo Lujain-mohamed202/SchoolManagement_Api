@@ -8,7 +8,7 @@ namespace School.Repo.Implementaion
     {
         private readonly AppDbContext _context;
 
-        public UnitOfWork(AppDbContext context,ITeacherRepo teacherRepo, IGenericRepo<Department> debartments, ISubjectRepo subjectRepo, IClassRoom classRoomRepo ,IGenericRepo<Student> studendRepo, IGenericRepo<Enrollment> enrollmentRepo)
+        public UnitOfWork(IUserRepo userRepo, AppDbContext context,ITeacherRepo teacherRepo, IGenericRepo<Department> debartments, ISubjectRepo subjectRepo, IClassRoom classRoomRepo ,IGenericRepo<Student> studendRepo, IGenericRepo<Enrollment> enrollmentRepo)
 
         {
             _context = context;
@@ -17,6 +17,7 @@ namespace School.Repo.Implementaion
             this.classRooms = classRoomRepo;
             this.students = studendRepo;
             this.enrollments = enrollmentRepo;
+            this.userRepo = userRepo;
 
         }
         public ITeacherRepo teachers { get; }
@@ -30,6 +31,8 @@ namespace School.Repo.Implementaion
         public IGenericRepo<Enrollment> enrollments { get; }
 
         public IGenericRepo<Department> debartments { get; }
+
+        public IUserRepo userRepo { get; }
 
         public void Save()
         {

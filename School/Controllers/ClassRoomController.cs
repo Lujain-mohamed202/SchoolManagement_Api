@@ -148,6 +148,6 @@ namespace School.Controllers
             }
             return Ok(r);
         }
-        []
+        
     }
 }

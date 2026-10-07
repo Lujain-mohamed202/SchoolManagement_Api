@@ -8,6 +8,7 @@ namespace School.Repo.Interface
         ISubjectRepo subjects { get; }
         IClassRoom classRooms { get; }
         
+        IUserRepo userRepo { get; }
         IGenericRepo<Student>students { get; }
         IGenericRepo<Enrollment> enrollments { get; }
         IGenericRepo<Department> debartments { get; }
