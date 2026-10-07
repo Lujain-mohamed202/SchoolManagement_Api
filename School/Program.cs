@@ -36,6 +36,7 @@ builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:key"]));
+
 builder.Services.AddAuthentication(options =>
 {
 
